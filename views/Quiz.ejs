@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+
+</head>
+
+<body>
+    <% questions.forEach(function(question) { %>
+
+        <form class="quiz_form" id="form-<%= question.id %>" name="form-<%= question.id %>">
+
+            <div class="form-group">
+                <label for="question-<%= question.id %>">
+                    <%= question.Text %>
+                </label>
+
+                <select class="form-control questionSelect" id="question-<%= question.id %>">
+                    <% question.options.forEach(function(options) { %>
+
+                        <option value="<%= options.isCorrect %>">
+                            <%= options.Text %>
+                        </option>
+
+                        <% }); %>
+
+                </select>
+
+
+            </div>
+        </form>
+
+
+        <% }); %>
+
+            <button onclick="getQuestionAnswers()" class="btn btn-primary">Submit Quiz</button>
+            <script>
+                const getQuestionAnswers = () => {
+                    //get all question forms
+                    let questionsSelects = [...document.getElementsByClassName("questionSelect")];
+
+                    let answeredQuestions = questionsSelects.map(element => {
+                        const selectedValue = element.options[element.selectedIndex].value;
+                        const elementId = element.id;
+                        return { id: elementId, isCorrect: selectedValue }
+                    });
+
+                    console.log(answeredQuestions)
+                    fetch('/quiz', {
+                        method: 'post',
+                        headers: {
+                            'Accept': 'application/json, text/plain, */*',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(answeredQuestions)
+                    }).then(res => {
+                        console.log(res.json())
+                    }
+                        )
+                        .then(res => console.log(res));
+
+                }
+
+
+            </script>
+
+</body>
+
+</html>
