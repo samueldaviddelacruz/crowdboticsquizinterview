@@ -37,31 +37,31 @@
         <% }); %>
 
             <button onclick="getQuestionAnswers()" class="btn btn-primary">Submit Quiz</button>
+            <a href="/quiz" id="play_again" class="btn btn-primary" style="display:none">Play Again?</a>
             <script>
                 const getQuestionAnswers = () => {
                     //get all question forms
                     let questionsSelects = [...document.getElementsByClassName("questionSelect")];
 
                     let answeredQuestions = questionsSelects.map(element => {
-                        const selectedValue = element.options[element.selectedIndex].value;
+                        const selectedValue = element.options[element.selectedIndex].value ==="true"?true:false;
                         const elementId = element.id;
                         return { id: elementId, isCorrect: selectedValue }
                     });
 
-                    console.log(answeredQuestions)
-                    fetch('/quiz', {
-                        method: 'post',
-                        headers: {
-                            'Accept': 'application/json, text/plain, */*',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(answeredQuestions)
-                    }).then(res => {
-                        console.log(res.json())
-                    }
-                        )
-                        .then(res => console.log(res));
 
+                    const answers = answeredQuestions;
+
+                    let score = 0;
+
+                    score = answers.reduce((acc, answer) => {
+                        return answer.isCorrect ? acc += 1 : acc += 0
+                    }, score);
+
+                    console.log(answeredQuestions)
+                    const result =  { totalScore:score,percent: (score/answers.length)*100 ,answersLenght:answers.length}
+                    alert(`You Scored  ${result.totalScore} out of ${result.answersLenght} for a ${result.percent}`)
+                    document.getElementById("play_again").style="display:block"
                 }
 
 
